@@ -1,0 +1,16 @@
+
+            string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["LibrarySystemConnectionString"].ToString();
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            string Insert = "insert into Table_1(u_fname,u_lname,u_email,u_contact) values ('" + textFname.Text + "','" + textLname.Text + "','" + textEmail.Text + "','" + textContact.Text + "')";
+            SqlCommand cmd = new SqlCommand(Insert, connection);
+            int m = cmd.ExecuteNonQuery();
+            if (m != 0)
+            {
+                Response.Write("<script> alert('Data Inserted !!')</script>");
+            }
+            else
+            {
+                Response.Write("<script> alert('Data Inserted !!')</script>");
+            }
+            connection.Close();

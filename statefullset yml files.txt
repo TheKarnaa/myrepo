@@ -1,0 +1,136 @@
+service defination file for statefull set on mysql pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels: 
+    app: mysql
+spec:                [ generally on spec section we use type ,but for statefulset
+ clusterIP: None         we use cluster ip, when you say cluster ip = none it will
+ ports:                  understand it is headless service object] because of this
+   -name: tcp            we know this is headless service object
+   protocol: TCP
+   port: 3306
+ selector:
+   app: mysql
+
+---
+apiVersion: v1
+kind: StatefulSet
+metadat:
+ name: mysql
+spec:
+ replicas: 2
+ selector:
+  matchLabels:
+   app: mysql
+ serviceName: mysql  [ this is the new object its usually used in state fullset]
+ template:
+  name: mysql-pod
+  labels:
+   app: mysql
+spec: 
+  containers:
+   -name: mysql
+    image: mysql:5
+    env:
+     - name: MYSQL_ROOT_PASSWORD
+       value: intelliqit
+    ports:
+      - name: tcp
+        protocol: TCP
+        containerPort: 3306
+    volumeMounts:
+       - name: task-pv-storage
+         mountPath: /var/lib/mysql  [the path is predifine in docker files ]
+   volumes:
+    -name: task-pv-storage
+     persistentVolumeClaim:
+       claimName: task-pv-claimho
+...
+
+
+ 
+Autoscalling 
+=============
+horizontalpodautoscaller (object)
+hpa.yml
+---
+apiVersion: app/v1
+kind: Deployment
+metadata:
+ name: Php-apache
+spec:
+ selector:
+  matchLabels:
+   run: php-apache
+ template:
+  metadata:
+   labels:
+    run: php-apache
+  spec: 
+    containers: 
+      -name: php-apache   [for this we use customize image from docker hub intelliqit/mynew]
+       image: intelliqit/mynew
+       ports:
+         -containerPort
+       resource:
+        request:
+         cpu: 200mi
+        limits:
+         cpu: 500mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: php-apache
+ labels:
+  run: php-apache
+spec:
+ ports: 
+  -port: 80
+ selector:
+   run: php-apche
+...
+
+ingress.yml
+========
+---
+apiVersion: networking.k8s.io/v1
+kind: ingress
+metadata:
+ name: webserver-ingress
+spec:
+ rules: 
+  -host: tomcat.example.com
+   http:
+    paths:
+    - path: /
+    pathType: Prefix  [prefix show that if you give anything in host segment still it goes to the tomcat server}
+    backend: 
+     service:
+      name: tomcat-service
+      port:
+       number: 80
+  -host: apache.example.com
+   http:
+    paths:
+    - path: /
+    pathType: Prefix  [prefix show that if you give anything in host segment still it goes to the tomcat server}
+    backend: 
+     service:
+      name: apache-service
+      port:
+       number: 80
+   -host: nginx.example.com
+   http:
+    paths:
+    - path: /
+    pathType: Prefix  [prefix show that if you give anything in host segment still it goes to the tomcat server}
+    backend: 
+     service:
+      name: nginx-service
+      port:
+       number: 80
+...

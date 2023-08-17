@@ -1,0 +1,13 @@
+cd command - change directory 
+    it is use move one folder to other folder 
+
+in linux single dot is called current working directory (. )
+      double dot is called parent directory (..)
+
+any file who is starting with a dot ,linux treated the file as a hidden file
+
+cp =  cp tense to coppieng files
+mv = mv tense to cut paste the files and directories
+   its also perform rename the files and dirctorited
+
+     text processing tools
